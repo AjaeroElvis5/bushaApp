@@ -40,9 +40,6 @@ const Otp = () => {
   try {
     const response = await axios.post(`${BASE_URL}/otp`, { otp: otpCode });
     console.log(response.data);
-    setError("");
-    // navigate or do something on success here
-  } catch (err) {
     setError("Invalid code, try again");
     setOtp(Array(6).fill("")); // clear the state
 
@@ -53,6 +50,8 @@ const Otp = () => {
 
     // Focus first input (optional)
     inputsRef.current[0]?.focus();
+  } catch (err) {
+     setError("Invalid OTP or network error.");
   } finally {
     setLoading(false);
   }
