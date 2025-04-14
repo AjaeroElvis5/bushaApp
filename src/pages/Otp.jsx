@@ -28,26 +28,35 @@ const Otp = () => {
     }
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    const otpCode = otp.join("");
-    if (otpCode.length < 6) {
-      setError("Please enter all 6 digits");
-      return;
-    }
+ const handleSubmit = async (e) => {
+  e.preventDefault();
+  const otpCode = otp.join("");
+  if (otpCode.length < 6) {
+    setError("Please enter all 6 digits");
+    return;
+  }
 
-    setLoading(true);
-    try {
-      const response = await axios.post(`${BASE_URL}/otp`, { otp: otpCode });
-      console.log(response.data);
-      setError("");
-      navigate("/dashboard");
-    } catch (err) {
-      setError("Invalid OTP or network error.");
-    } finally {
-      setLoading(false);
-    }
-  };
+  setLoading(true);
+  try {
+    const response = await axios.post(`${BASE_URL}/otp`, { otp: otpCode });
+    console.log(response.data);
+    setError("");
+    // navigate or do something on success here
+  } catch (err) {
+    setError("Invalid code, try again");
+    setOtp(Array(6).fill("")); // clear the state
+
+    // Clear input fields visually
+    inputsRef.current.forEach((input) => {
+      if (input) input.value = "";
+    });
+
+    // Focus first input (optional)
+    inputsRef.current[0]?.focus();
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <div className="min-h-screen bg-white text-black flex items-start pt-28 justify-center px-4">
@@ -64,7 +73,7 @@ const Otp = () => {
                 type="text"
                 inputMode="numeric"
                 maxLength={1}
-                className="w-8 h-14 text-center text-2xl bg-transparent border-b-2 border-black text-white focus:outline-none focus:border-blue-500"
+                className="w-8 h-14 text-center text-2xl bg-transparent border-b-2 border-black text-black focus:outline-none focus:border-blue-500"
                 value={digit}
                 onChange={(e) => handleChange(e.target.value, index)}
                 onKeyDown={(e) => handleKeyDown(e, index)}
